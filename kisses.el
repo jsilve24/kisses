@@ -61,13 +61,18 @@
 (defun kisses--set-local-vars ()
   "Internal function used to set all the local variables for the mode."
   (display-line-numbers-mode 0)
-  (toggle-truncate-lines 1)
+  (if truncate-lines
+      (toggle-truncate-lines 1))
   (visual-line-mode -1)
   (setq-local auto-hscroll-mode nil)
   (setq left-fringe-width 0)
   (setq right-fringe-width 0)
   (set-display-table-slot standard-display-table 'truncation 32)
-  (set-window-buffer (selected-window) (get-buffer "*splash*")))
+  (set-window-buffer (selected-window) (get-buffer "*splash*"))
+  (setq cursor-type nil)
+  (if (fboundp 'evil-mode)
+      (setq-local evil-normal-state-cursor nil)
+    (setq-local cursor-type nil)))
 
 (define-derived-mode kisses-mode
   fundamental-mode "KISSES"
@@ -116,14 +121,17 @@ banner at the center. Also checks to see if buffer named *splash* already exists
   (let* ((height (window-body-height nil))
 	 (width (window-total-width nil))
 	 (box-top (/ (nth 0 kisses--box-dimensions) 2))
-	 (box-left (/ (nth 1 kisses--box-dimensions) 2)))
+	 (box-left (/ (nth 1 kisses--box-dimensions) 2))
+	 (calling-window (selected-window)))
+    (select-window window)
     (kisses--set-local-vars)
     ;; now acctually set window start
     (goto-char kisses--insertion-point)
     (set-window-start (selected-window) (point) nil)
     (scroll-left (- (current-column) (window-hscroll)))
     (scroll-down (+ 1 (- (/ height 2) box-top)))
-    (scroll-right (- (/ width 2) box-left))))
+    (scroll-right (- (/ width 2) box-left))
+    (select-window calling-window)))
 
 
 
@@ -142,13 +150,20 @@ banner at the center. Also checks to see if buffer named *splash* already exists
   (kisses-redraw)
   (get-buffer "*splash*"))
 
-(add-hook 'window-startup-hook (lambda ()
-				 (switch-to-buffer (get-buffer-create "*splash*"))
-				 (kisses-redraw)))
+;; (add-hook 'window-startup-hook (lambda ()
+;; 				 (switch-to-buffer (get-buffer-create "*splash*"))
+;; 				 (kisses-redraw)))
 ;;; Define kisses-mode
 
-;; bit of setup to make redisplay nice
-;; (add-hook 'window-size-change-functions #')
+(defun kisses-window-size-change-function (arg)
+  "Funtion to run on window size change."
+  ;; get list of windows displaying "*splash*"
+  (when (get-buffer "*splash*")
+    (let ((w-to-update (get-buffer-window-list "*splash*" nil (selected-frame))))
+      (-map 'kisses--set-window-start w-to-update))))
 
+;; bit of setup to make redisplay nice
+(add-hook 'window-size-change-functions 'kisses-window-size-change-function)
+;; (add-hook 'window-startup-hook 'kisses-window-size-change-function)
 
 (provide 'kisses)
