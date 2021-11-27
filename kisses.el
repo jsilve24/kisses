@@ -58,6 +58,23 @@
 (defvar kisses--insertion-point nil
   "Variable used to store insertion point of upper left point of banner.")
 
+(defun kisses--set-local-vars ()
+  "Internal function used to set all the local variables for the mode."
+  (display-line-numbers-mode 0)
+  (toggle-truncate-lines 1)
+  (visual-line-mode -1)
+  (setq-local auto-hscroll-mode nil)
+  (setq left-fringe-width 0)
+  (setq right-fringe-width 0)
+  (set-display-table-slot standard-display-table 'truncation 32)
+  (set-window-buffer (selected-window) (get-buffer "*splash*")))
+
+(define-derived-mode kisses-mode
+  fundamental-mode "KISSES"
+  "Major mode for showing custom splash screen."
+  ;; bit of setup to make display nice
+  (kisses--set-local-vars))
+
 ;; make buffer of size equal to largest monitor store center of text coordinates 
 (defun kisses--make-splash-buffer ()
   "Creates buffer of dimension `kisses--max-columns' and `kisses--max-rows' and places the
@@ -73,7 +90,6 @@ banner at the center. Also checks to see if buffer named *splash* already exists
 	 (padding-left (- width box-left))
 	 (top-pad-string (concat (make-string kisses--max-columns ?\s) "\n")))
     (switch-to-buffer splash-buffer)
-    (toggle-truncate-lines 1)
     (read-only-mode -1)
     (if (string= major-mode "kisses-mode")
 	(erase-buffer)
@@ -90,15 +106,8 @@ banner at the center. Also checks to see if buffer named *splash* already exists
       (setq kisses--insertion-point (point))
       (deactivate-mark)
       (read-only-mode 1)
-      ;; (kisses-mode)
-      (display-line-numbers-mode 0)
-      (setq-local auto-hscroll-mode nil)
-      (setq left-fringe-width 0)
-      (setq right-fringe-width 0)
-      (set-display-table-slot standard-display-table 'truncation 32)
-      (set-window-buffer (selected-window) (get-buffer "*splash*"))
-      ;; (get-buffer "*splash*")
-      )))
+      (kisses-mode)
+      (get-buffer "*splash*"))))
 
 
 (defun kisses--set-window-start (window)
@@ -106,13 +115,15 @@ banner at the center. Also checks to see if buffer named *splash* already exists
   ;; look at set-window-start function
   (let* ((height (window-body-height nil))
 	 (width (window-total-width nil))
-	 (box-top (/  (nth 0 kisses--box-dimensions) 2))
-	 (box-left (/  (nth 1 kisses--box-dimensions) 2)))
+	 (box-top (/ (nth 0 kisses--box-dimensions) 2))
+	 (box-left (/ (nth 1 kisses--box-dimensions) 2)))
+    (kisses--set-local-vars)
+    ;; now acctually set window start
     (goto-char kisses--insertion-point)
     (set-window-start (selected-window) (point) nil)
     (scroll-left (- (current-column) (window-hscroll)))
-    (scroll-down (+ 1  (- (/ height 2)  box-top)))
-    (scroll-right (- (/ width 2)  box-left))))
+    (scroll-down (+ 1 (- (/ height 2) box-top)))
+    (scroll-right (- (/ width 2) box-left))))
 
 
 
@@ -126,12 +137,18 @@ banner at the center. Also checks to see if buffer named *splash* already exists
   "Fix up buffer and recenter."
   (kisses--set-window-start (selected-window)))
 
-;;; Define kisses-mode
-(define-derived-mode kisses-mode
-  fundamental-mode "KISSES"
-  "Major mode for showing custom splash screen."
-  (kisses-redraw))
+(defun kisses-initial-buffer ()
+  "Function designed to be called by initial buffer."
+  (kisses-redraw)
+  (get-buffer "*splash*"))
 
+(add-hook 'window-startup-hook (lambda ()
+				 (switch-to-buffer (get-buffer-create "*splash*"))
+				 (kisses-redraw)))
+;;; Define kisses-mode
+
+;; bit of setup to make redisplay nice
+;; (add-hook 'window-size-change-functions #')
 
 
 (provide 'kisses)
