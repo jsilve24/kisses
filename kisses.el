@@ -14,6 +14,9 @@
 ;; This file is not part of GNU Emacs.
 ;;
 ;;; Commentary:
+;; 
+;; This is a simple library that creates a splash buffer with `kisses-banner'
+;; centered vertically and horizontally. See git readme for more details. 
 ;;
 ;;; Code:
 
@@ -28,7 +31,7 @@
   "Maximum number of columns a window can have")
 
 
-(defvar kisses--banner
+(defvar kisses-banner
   "@@@@@@@@  @@@@@@@@@@    @@@@@@    @@@@@@@   @@@@@@   
 @@@@@@@@  @@@@@@@@@@@  @@@@@@@@  @@@@@@@@  @@@@@@@   
 @@!       @@! @@! @@!  @@!  @@@  !@@       !@@       
@@ -48,10 +51,10 @@
 ;; calculate width of input text
 (defun kisses--banner-box-dimenions ()
   "Returns list (row col) giving dimensions of bounding box of
-  kisses--banner."
-  (let* ((strings (split-string kisses--banner "\n"))
+  kisses-banner."
+  (let* ((strings (split-string kisses-banner "\n"))
 	 (string-lengths (-map 'length strings))
-	 (ncol (eval `(max ,@string-lengths)))
+	 (ncol (apply 'max string-lengths))
 	 (nrow (length strings)))
     (setq kisses--box-dimensions (list nrow ncol))))
 
@@ -102,7 +105,7 @@ banner at the center. Also checks to see if buffer named *splash* already exists
     (dotimes (_ padding-top) (insert top-pad-string))
     (let ((tmp-point (point))
 	  (indent-tabs-mode nil))
-      (insert kisses--banner)
+      (insert kisses-banner)
       (mark-paragraph)
       (indent-region (point) (mark) padding-left)
       (goto-char (point))
@@ -135,12 +138,14 @@ banner at the center. Also checks to see if buffer named *splash* already exists
 
 
 (defun kisses-redraw ()
+  (interactive)
   "Fix up buffer and recenter."
   (kisses--make-splash-buffer)
   (kisses--set-window-start (selected-window)))
 
 
 (defun kisses-recenter ()
+  (interactive)
   "Fix up buffer and recenter."
   (kisses--set-window-start (selected-window)))
 
