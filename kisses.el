@@ -29,7 +29,7 @@
 
 
 (defvar kisses--banner
-       "@@@@@@@@  @@@@@@@@@@    @@@@@@    @@@@@@@   @@@@@@   
+  "@@@@@@@@  @@@@@@@@@@    @@@@@@    @@@@@@@   @@@@@@   
 @@@@@@@@  @@@@@@@@@@@  @@@@@@@@  @@@@@@@@  @@@@@@@   
 @@!       @@! @@! @@!  @@!  @@@  !@@       !@@       
 !@!       !@! !@! !@!  !@!  @!@  !@!       !@!       
@@ -40,7 +40,7 @@
 :: ::::   :::     ::   ::   :::   ::: :::  :::: ::   
 : :: ::    :      :     :   : :   :: :: :  :: : :    
 "
-       "Banner to display on startup.")
+  "Banner to display on startup.")
 
 (defvar kisses--box-dimensions nil
   "Variable used to store dimensions (rows columns) of banner text.")
@@ -50,9 +50,9 @@
   "Returns list (row col) giving dimensions of bounding box of
   kisses--banner."
   (let* ((strings (split-string kisses--banner "\n"))
-	(string-lengths (-map 'length strings))
-	(ncol (eval `(max ,@string-lengths)))
-	(nrow (length strings)))
+	 (string-lengths (-map 'length strings))
+	 (ncol (eval `(max ,@string-lengths)))
+	 (nrow (length strings)))
     (setq kisses--box-dimensions (list nrow ncol))))
 
 (defvar kisses--insertion-point nil
@@ -134,7 +134,6 @@ banner at the center. Also checks to see if buffer named *splash* already exists
     (select-window calling-window)))
 
 
-
 (defun kisses-redraw ()
   "Fix up buffer and recenter."
   (kisses--make-splash-buffer)
@@ -149,11 +148,6 @@ banner at the center. Also checks to see if buffer named *splash* already exists
   "Function designed to be called by initial buffer."
   (kisses-redraw)
   (get-buffer "*splash*"))
-
-;; (add-hook 'window-startup-hook (lambda ()
-;; 				 (switch-to-buffer (get-buffer-create "*splash*"))
-;; 				 (kisses-redraw)))
-;;; Define kisses-mode
 
 (defun kisses-window-size-change-function (arg)
   "Funtion to run on window size change."
