@@ -74,7 +74,7 @@
   (set-display-table-slot standard-display-table 'truncation 32)
   (set-window-buffer (selected-window) (get-buffer "*splash*"))
   (setq cursor-type nil)
-  (face-remap-add-relative 'region '(:foreground nil :background nil))
+  (face-remap-add-relative 'region '(:inherit default))
   (if (fboundp 'evil-mode)
       (setq-local evil-normal-state-cursor nil)
       (setq-local evil-emacs-state-cursor nil)
