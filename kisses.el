@@ -68,13 +68,16 @@
       (toggle-truncate-lines 1))
   (visual-line-mode -1)
   (setq-local auto-hscroll-mode nil)
+  (setq-local hscroll-margin 0)
   (setq left-fringe-width 0)
   (setq right-fringe-width 0)
   (set-display-table-slot standard-display-table 'truncation 32)
   (set-window-buffer (selected-window) (get-buffer "*splash*"))
   (setq cursor-type nil)
+  (face-remap-add-relative 'region '(:foreground nil :background nil))
   (if (fboundp 'evil-mode)
       (setq-local evil-normal-state-cursor nil)
+      (setq-local evil-emacs-state-cursor nil)
     (setq-local cursor-type nil)))
 
 (define-derived-mode kisses-mode
@@ -99,6 +102,7 @@ banner at the center. Also checks to see if buffer named *splash* already exists
 	 (top-pad-string (concat (make-string kisses--max-columns ?\s) "\n")))
     (switch-to-buffer splash-buffer)
     (read-only-mode -1)
+    (kisses--set-local-vars)
     (if (string= major-mode "kisses-mode")
 	(erase-buffer)
       nil)
@@ -158,11 +162,16 @@ banner at the center. Also checks to see if buffer named *splash* already exists
   "Funtion to run on window size change."
   ;; get list of windows displaying "*splash*"
   (when (get-buffer "*splash*")
+    ;; (if (string= major-mode "kisses-mode")
+    ;; 	(kisses--set-window-start (selected-window)))
     (let ((w-to-update (get-buffer-window-list "*splash*" nil (selected-frame))))
-      (-map 'kisses--set-window-start w-to-update))))
+      (-map 'kisses--set-window-start w-to-update))
+    ))
 
 ;; bit of setup to make redisplay nice
 (add-hook 'window-size-change-functions 'kisses-window-size-change-function)
+
+;; (add-hook 'window-size-change-functions (lambda (arg) (message "size change detected")))
 ;; (add-hook 'window-startup-hook 'kisses-window-size-change-function)
 
 (provide 'kisses)
