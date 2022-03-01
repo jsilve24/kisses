@@ -10,6 +10,10 @@ I wanted a really simple splash screen that simply centered a nice banner. But I
 
 Keep it simple stupid, right? 
 
+## Screenshot
+![screenshototikS8](https://user-images.githubusercontent.com/452422/156245763-fb266d25-9ea8-4595-8c3c-820869d63178.jpg)
+
+
 ## Usage
 
 There are two main functions (both idempotent) and one main variable. 
