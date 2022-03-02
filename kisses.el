@@ -9,7 +9,7 @@
 ;; Version: 0.0.1
 ;; Keywords: 
 ;; Homepage: https://github.com/jsilve24/kisses
-;; Package-Requires: ((emacs "24.3"))
+;; Package-Requires: ((emacs "24.3") (dash "2.19.1"))
 ;;
 ;; This file is not part of GNU Emacs.
 ;;
@@ -175,3 +175,5 @@ banner at the center. Also checks to see if buffer named *splash* already exists
 ;; (add-hook 'window-startup-hook 'kisses-window-size-change-function)
 
 (provide 'kisses)
+
+;;; kisses.el ends here
