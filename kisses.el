@@ -5,13 +5,17 @@
 ;; Author: Justin Silverman <https://github.com/jsilve24>
 ;; Maintainer: Justin Silverman <jsilve24@gmail.com>
 ;; Created: 2021-11-26
-;; Modified: 2021-11-26
-;; Version: 0.0.1
+;; Modified: 2022-05-10
+;; Version: 0.0.2
 ;; Keywords: 
 ;; Homepage: https://github.com/jsilve24/kisses
 ;; Package-Requires: ((emacs "24.3") (dash "2.19.1"))
 ;;
 ;; This file is not part of GNU Emacs.
+;; 
+;;; Changes:
+;;    Version 0.0.2: Updated from indent-region to indent-rigidly to avoid error when banner first
+;;         character is whitespace on some lines
 ;;
 ;;; Commentary:
 ;; 
@@ -111,7 +115,8 @@ banner at the center. Also checks to see if buffer named *splash* already exists
 	  (indent-tabs-mode nil))
       (insert kisses-banner)
       (mark-paragraph)
-      (indent-region (point) (mark) padding-left)
+      ;; (indent-region (point) (mark) padding-left) ;; I think the error is in this line
+      (indent-rigidly (point) (mark) padding-left) ;; I think the error is in this line
       (goto-char (point))
       (re-search-forward "[^\s\n]")
       (backward-char)
