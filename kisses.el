@@ -115,10 +115,9 @@ banner at the center. Also checks to see if buffer named *splash* already exists
 	  (indent-tabs-mode nil))
       (insert kisses-banner)
       (mark-paragraph)
-      ;; (indent-region (point) (mark) padding-left) ;; I think the error is in this line
-      (indent-rigidly (point) (mark) padding-left) ;; I think the error is in this line
+      (indent-rigidly (point) (mark) padding-left) 
       (goto-char (point))
-      (re-search-forward "[^\s\n]")
+      (re-search-forward "[^\s\n]") ; FIXME
       (backward-char)
       (setq kisses--insertion-point (point))
       (deactivate-mark)
@@ -156,7 +155,9 @@ banner at the center. Also checks to see if buffer named *splash* already exists
 (defun kisses-recenter ()
   (interactive)
   "Fix up buffer and recenter."
-  (kisses--set-window-start (selected-window)))
+  ;; TODO: if buffer is kisses
+  (if (string= major-mode "kisses-mode")
+      (kisses--set-window-start (selected-window))))
 
 (defun kisses-initial-buffer ()
   "Function designed to be called by initial buffer."
